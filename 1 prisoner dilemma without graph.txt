@@ -1,0 +1,78 @@
+import numpy as np
+import pandas as pd
+import random
+
+# Payoff Matrix for Cooperative Prisoner's Dilemma (Player A, Player B)
+payoff_matrix = {
+    ('Cooperate', 'Cooperate'): (3, 3),
+    ('Cooperate', 'Defect'): (0, 5),
+    ('Defect', 'Cooperate'): (5, 0),
+    ('Defect', 'Defect'): (1, 1)
+}
+
+# Display the payoff matrix
+df = pd.DataFrame(index=['Cooperate', 'Defect'], columns=['Cooperate', 'Defect'])
+for a in df.index:
+    for b in df.columns:
+        df.loc[a, b] = payoff_matrix[(a, b)]
+
+print("Payoff Matrix (Player A, Player B):\n")
+print(df)
+
+# Strategy definitions
+def always_cooperate(_):
+    return 'Cooperate'
+
+def always_defect(_):
+    return 'Defect'
+
+def tit_for_tat(user_history):
+    if not user_history:
+        return 'Cooperate'
+    return user_history[-1]
+
+def random_strategy(_):
+    return random.choice(['Cooperate', 'Defect'])
+
+# Strategy selector
+strategies = {
+    '1': ('Always Cooperate', always_cooperate),
+    '2': ('Always Defect', always_defect),
+    '3': ('Tit for Tat', tit_for_tat),
+    '4': ('Random', random_strategy)
+}
+
+# Choose strategy
+print("\nChoose computer strategy:")
+for key, (name, _) in strategies.items():
+    print(f"{key}. {name}")
+choice = input("Enter choice (1-4): ").strip()
+comp_strategy_name, comp_strategy = strategies.get(choice, strategies['4'])
+
+print(f"\nComputer will play using strategy: {comp_strategy_name}")
+
+# Game loop
+rounds = int(input("Enter number of rounds to play: "))
+user_score, comp_score = 0, 0
+user_history = []
+
+for i in range(rounds):
+    print(f"\nRound {i+1}")
+    user_move = input("Enter your move (Cooperate/Defect): ").capitalize()
+    while user_move not in ['Cooperate', 'Defect']:
+        user_move = input("Invalid input. Enter 'Cooperate' or 'Defect': ").capitalize()
+    
+    comp_move = comp_strategy(user_history)
+    
+    payoff = payoff_matrix[(user_move, comp_move)]
+    user_score += payoff[0]
+    comp_score += payoff[1]
+    user_history.append(user_move)
+
+    print(f"You chose: {user_move}")
+    print(f"Computer chose: {comp_move}")
+    print(f"Round payoff: You = {payoff[0]}, Computer = {payoff[1]}")
+    print(f"Total Score: You = {user_score}, Computer = {comp_score}")
+
+print("\nFinal Results:")
+print(f"You: {user_score}, Computer ({comp_strategy_name}): {comp_score}")

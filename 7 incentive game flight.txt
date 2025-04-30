@@ -1,0 +1,39 @@
+import random
+
+def closest_bid_game(true_val, strategies):
+    bids = {p: s(true_val) for p, s in strategies.items()}
+    winner = min(bids, key=lambda x: abs(bids[x] - true_val))
+    print(f"\nTrue Value: ₹{true_val}")
+    for p, b in bids.items():
+        print(f"{p}: ₹{b} (Diff: ₹{abs(b - true_val)})")
+    print(f"Winner: {winner}")
+
+# Scenario 1: Flight Fare
+true_price = random.randint(3000, 8000)
+strategies_flight = {
+    "Player A (Truthful)": lambda tp: tp,
+    "Player B (Overbid)": lambda tp: tp + random.randint(500, 1500),
+    "Player C (Underbid)": lambda tp: tp - random.randint(500, 1000)
+}
+print("=== Flight Fare Bidding ===")
+closest_bid_game(true_price, strategies_flight)
+
+# Scenario 2: Salary Estimation
+actual_salary = 70000
+salary_estimates = {
+    "Player A": lambda _: 65000,
+    "Player B": lambda _: 72000,
+    "Player C": lambda _: 75000
+}
+print("\n=== Salary Estimation ===")
+closest_bid_game(actual_salary, salary_estimates)
+
+# Scenario 3: Collectible Valuation
+true_value = 120000
+valuations = {
+    "Honest Buyer": lambda tv: tv,
+    "Speculator": lambda tv: tv + 30000,
+    "Undervaluing Trader": lambda tv: tv - 25000
+}
+print("\n=== Collectible Valuation ===")
+closest_bid_game(true_value, valuations)

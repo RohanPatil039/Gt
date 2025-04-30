@@ -1,0 +1,21 @@
+import numpy as np
+
+matrix = np.array([[3, 2, 5],
+                   [4, 1, 0],
+                   [6, 2, 3]])
+
+row_min = np.min(matrix, axis=1)
+col_max = np.max(matrix, axis=0)
+
+maxmin = np.max(row_min)
+minmax = np.min(col_max)
+
+print("Row Minima:", row_min)
+print("Column Maxima:", col_max)
+print("Maximin:", maxmin)
+print("Minimax:", minmax)
+
+if maxmin == minmax:
+    print("Saddle point exists at value:", maxmin)
+else:
+    print("No Saddle point exists.")

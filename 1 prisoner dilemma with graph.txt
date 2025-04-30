@@ -1,0 +1,85 @@
+
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # Define the payoff matrix
+    payoff_matrix = {
+        "C": {"C": (3, 3), "D": (0, 5)},
+        "D": {"C": (5, 0), "D": (1, 1)}
+    }
+
+    # Strategies
+    def ticfortat(previous_opponent_choice=0, previous_self_choice=0):
+        if previous_opponent_choice == 0 and previous_self_choice == 0:
+            return "C"
+        elif previous_opponent_choice == "C":
+            return "C"
+        elif previous_opponent_choice == "D":
+            return "D"
+
+    def always_cooperate(previous_opponent_choice=0, previous_self_choice=0):
+        return "C"
+
+    def always_defect(previous_opponent_choice=0, previous_self_choice=0):
+        return "D"
+
+    def random_choice(previous_opponent_choice=0, previous_self_choice=0):
+        return np.random.choice(["C", "D"])
+
+    state = False
+    def grim_trigger(previous_opponent_choice=0, previous_self_choice=0):
+        global state
+        if previous_opponent_choice == "D":
+            state = True
+        if state:
+            return "D"
+        else:
+            return "C"
+
+    # Game simulation
+    def game(rounds, player1, player2):
+        global state
+        state = False  # Reset for grim_trigger
+        prev_player1_choice = 0
+        prev_player2_choice = 0
+        player1_score = 0
+        player2_score = 0
+        choice1 = []
+        choice2 = []
+        for i in range(rounds):
+            p1_choice = player1(prev_player2_choice, prev_player1_choice)
+            p2_choice = player2(prev_player1_choice, prev_player2_choice)
+
+            choice1.append(p1_choice)
+            choice2.append(p2_choice)
+
+            round_score_1, round_score_2 = payoff_matrix[p1_choice][p2_choice]
+            player1_score += round_score_1
+            player2_score += round_score_2
+
+            prev_player1_choice = p1_choice
+            prev_player2_choice = p2_choice
+
+        return player1_score, player2_score, choice1, choice2
+
+    # Map C/D to numeric for plotting
+    def map_choices(choices):
+        return [1 if c == "D" else 0 for c in choices]
+
+    # Run the simulation
+    rounds = 20
+    player1score, player2score, player1choice, player2choice = game(rounds, grim_trigger, random_choice)
+
+    # Plot
+    plt.plot(map_choices(player1choice), label="Player1")
+    plt.plot(map_choices(player2choice), label="Player2")
+    plt.yticks([0, 1], ["C", "D"])
+    plt.title("Grim Trigger vs Random")
+    plt.legend()
+    plt.show()
+
+    # Optional: print scores
+    print("Player1 Score:", player1score)
+    print("Player2 Score:", player2score)
+

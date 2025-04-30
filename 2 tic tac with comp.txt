@@ -1,0 +1,117 @@
+import random
+
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * (4 * len(row) - 3))
+
+def check_winner(board, player):
+    size = len(board)
+    for row in board:
+        if all(cell == player for cell in row):
+            return True
+    for col in zip(*board):
+        if all(cell == player for cell in col):
+            return True
+    if all(board[i][i] == player for i in range(size)):
+        return True
+    if all(board[i][size - 1 - i] == player for i in range(size)):
+        return True
+    return False
+
+def get_empty_positions(board):
+    return [(i, j) for i in range(len(board)) for j in range(len(board)) if board[i][j] == " "]
+
+def minimax(board, depth, is_maximizing):
+    if check_winner(board, "O"):
+        return 1
+    elif check_winner(board, "X"):
+        return -1
+    elif not get_empty_positions(board):
+        return 0
+
+    if is_maximizing:
+        best_score = -float("inf")
+        for (i, j) in get_empty_positions(board):
+            board[i][j] = "O"
+            score = minimax(board, depth + 1, False)
+            board[i][j] = " "
+            best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = float("inf")
+        for (i, j) in get_empty_positions(board):
+            board[i][j] = "X"
+            score = minimax(board, depth + 1, True)
+            board[i][j] = " "
+            best_score = min(score, best_score)
+        return best_score
+
+def ai_move(board):
+    best_score = -float("inf")
+    best_move = None
+    for (i, j) in get_empty_positions(board):
+        board[i][j] = "O"
+        score = minimax(board, 0, False)
+        board[i][j] = " "
+        if score > best_score:
+            best_score = score
+            best_move = (i, j)
+    return best_move
+
+def random_ai_move(board):
+    return random.choice(get_empty_positions(board))
+
+def user_move(board):
+    while True:
+        try:
+            row = int(input(f"Enter row (0-{len(board)-1}): "))
+            col = int(input(f"Enter col (0-{len(board)-1}): "))
+            if (0 <= row < len(board)) and (0 <= col < len(board)) and board[row][col] == " ":
+                return (row, col)
+            else:
+                print("Invalid move. Try again.")
+        except:
+            print("Invalid input. Use numbers only.")
+
+def play_game():
+    while True:
+        try:
+            size = int(input("Choose board size (3 for 3x3, 4 for 4x4): "))
+            if size in [3, 4]:
+                break
+            else:
+                print("Only 3 and 4 are supported.")
+        except:
+            print("Invalid input. Enter 3 or 4.")
+
+    board = [[" " for _ in range(size)] for _ in range(size)]
+    print(f"Tic Tac Toe {size}x{size}! You are X. Computer is O.")
+    print_board(board)
+
+    max_turns = size * size
+    for turn in range(max_turns):
+        if turn % 2 == 0:
+            print("Your turn:")
+            r, c = user_move(board)
+            board[r][c] = "X"
+        else:
+            print("Computer's turn:")
+            if size == 3:
+                r, c = ai_move(board)  # Minimax AI
+            else:
+                r, c = random_ai_move(board)  # Random for 4x4
+            board[r][c] = "O"
+
+        print_board(board)
+
+        if check_winner(board, "X"):
+            print("You win!")
+            return
+        elif check_winner(board, "O"):
+            print("Computer wins!")
+            return
+
+    print("It's a draw!")
+
+play_game()

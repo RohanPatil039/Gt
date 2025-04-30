@@ -1,0 +1,16 @@
+import numpy as np 
+
+    type_probs = {"T1": 0.6, "T2": 0.4} 
+
+    payoff_T1 = np.array([[3, 0], 
+                          [5, 1]]) 
+    payoff_T2 = np.array([[2, 4], 
+                          [1, 3]]) 
+
+    expected_payoff = (type_probs["T1"] * payoff_T1) + (type_probs["T2"] * payoff_T2) 
+    print("Expected Payoff Matrix for Player 1 (Bayesian Game):") 
+    print(np.round(expected_payoff, 2)) 
+
+    row_minima = np.min(expected_payoff, axis=1) 
+    best_strategy_index = np.argmax(row_minima) 
+    print(f"\nBest strategy for Player 1 (Bayesian): Strategy {['A', 'B'][best_strategy_index]}")

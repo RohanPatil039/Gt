@@ -1,0 +1,37 @@
+# !pip install nashpy  ← Uncomment if running in a notebook
+
+import nashpy as nash
+import numpy as np
+
+# Define Matching Pennies game
+A = np.array([[1, -1],
+              [-1, 1]])  # Player A's payoff
+B = -A  # Player B's payoff (opposite: zero-sum)
+
+# Create game instance
+game = nash.Game(A, B)
+print(" Matching Pennies Game - No Pure Strategy Nash Equilibrium (PSNE)\n")
+
+# Find mixed strategy Nash equilibria
+equilibria = list(game.support_enumeration())
+
+# Display results
+for eq in equilibria:
+    print("Mixed Strategy Nash Equilibrium:")
+    print("Player A:", eq[0])
+    print("Player B:", eq[1])
+
+# Adjusted Game with PSNE
+A2 = np.array([[3, 0],
+               [0, 1]])
+B2 = np.array([[2, 0],
+               [0, 4]])
+
+game2 = nash.Game(A2, B2)
+print("\n Adjusted Game - With PSNE")
+
+eqs2 = list(game2.support_enumeration())
+for eq in eqs2:
+    print("Nash Equilibrium (may be pure):")
+    print("Player A:", eq[0])
+    print("Player B:", eq[1])  # ✅ Fixed the space issue
