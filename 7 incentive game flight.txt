@@ -36,4 +36,4 @@ valuations = {
     "Undervaluing Trader": lambda tv: tv - 25000
 }
 print("\n=== Collectible Valuation ===")
-closest_bid_game(true_value, valuations)
+closest_bid_game(true_value, valuations)
